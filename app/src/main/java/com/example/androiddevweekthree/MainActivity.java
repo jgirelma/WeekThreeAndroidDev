@@ -1,10 +1,15 @@
 package com.example.androiddevweekthree;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,24 +20,33 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
+    String input;
+    EditText inputText;
+    Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        button = (Button) findViewById(R.id.button);
+        inputText = (EditText) findViewById(R.id.editText);
+        if(fileExists("savedInput")){
+            inputText.setText(open("savedInput"));
+        }
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                input = inputText.getText().toString();
+                save("savedInput", input);
+            }
+        });
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        TextView tvId = (TextView) findViewById(R.id.title_view);
 
-        //Get the date and time
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z");
-        String currentDateandTime = sdf.format(new Date());
-
-        //Set view/text
-        tvId.setText( "Todo at "+ currentDateandTime.toString());
     }
 
     @Override
@@ -46,9 +60,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+        // call superclass to save any view hierarchy
+        super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
     }
+
 
     /** Writes textToSave to the file denoted by fileName. **/
     private void save(String fileName, String textToSave) {
